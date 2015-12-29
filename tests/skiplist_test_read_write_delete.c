@@ -34,7 +34,7 @@ void test1() {
     uint64_t * vp, val;
     
     printf("skiplist_test_read_write_delete\n");
-    fp = fopen("../operation_sequences/operation_sequence_with_feedback","r");
+    fp = fopen("../misc_phd/input/operation_sequences/operation_sequence_with_feedback","r");
     if(fp==NULL){
         printf("fp is null!\n");
         exit(1);
