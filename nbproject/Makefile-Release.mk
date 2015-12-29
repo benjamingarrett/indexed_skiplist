@@ -37,6 +37,12 @@ OBJECTFILES= \
 	${OBJECTDIR}/main.o \
 	${OBJECTDIR}/indexed_skiplist.o
 
+# Test Directory
+TESTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}/tests
+
+# Test Files
+TESTFILES= \
+	${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/indexed_skiplist
 
 # C Compiler Flags
 CFLAGS=
@@ -74,6 +80,54 @@ ${OBJECTDIR}/indexed_skiplist.o: indexed_skiplist.c
 
 # Subprojects
 .build-subprojects:
+
+# Build Test Targets
+.build-tests-conf: .build-conf ${TESTFILES}
+${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/indexed_skiplist: ${TESTDIR}/tests/skiplist_test_rand_level.o ${OBJECTFILES:%.o=%_nomain.o}
+	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
+	${LINK.c}   -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/indexed_skiplist $^ ${LDLIBSOPTIONS} 
+
+
+${TESTDIR}/tests/skiplist_test_rand_level.o: tests/skiplist_test_rand_level.c 
+	${MKDIR} -p ${TESTDIR}/tests
+	${RM} $@.d
+	$(COMPILE.c) -O2 -MMD -MP -MF $@.d -o ${TESTDIR}/tests/skiplist_test_rand_level.o tests/skiplist_test_rand_level.c
+
+
+${OBJECTDIR}/main_nomain.o: ${OBJECTDIR}/main.o main.c 
+	${MKDIR} -p ${OBJECTDIR}
+	@NMOUTPUT=`${NM} ${OBJECTDIR}/main.o`; \
+	if (echo "$$NMOUTPUT" | ${GREP} '|main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
+	then  \
+	    ${RM} $@.d;\
+	    $(COMPILE.c) -O2 -Dmain=__nomain -MMD -MP -MF $@.d -o ${OBJECTDIR}/main_nomain.o main.c;\
+	else  \
+	    ${CP} ${OBJECTDIR}/main.o ${OBJECTDIR}/main_nomain.o;\
+	fi
+
+${OBJECTDIR}/indexed_skiplist_nomain.o: ${OBJECTDIR}/indexed_skiplist.o indexed_skiplist.c 
+	${MKDIR} -p ${OBJECTDIR}
+	@NMOUTPUT=`${NM} ${OBJECTDIR}/indexed_skiplist.o`; \
+	if (echo "$$NMOUTPUT" | ${GREP} '|main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
+	then  \
+	    ${RM} $@.d;\
+	    $(COMPILE.c) -O2 -Dmain=__nomain -MMD -MP -MF $@.d -o ${OBJECTDIR}/indexed_skiplist_nomain.o indexed_skiplist.c;\
+	else  \
+	    ${CP} ${OBJECTDIR}/indexed_skiplist.o ${OBJECTDIR}/indexed_skiplist_nomain.o;\
+	fi
+
+# Run Test Targets
+.test-conf:
+	@if [ "${TEST}" = "" ]; \
+	then  \
+	    ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/indexed_skiplist || true; \
+	else  \
+	    ./${TEST} || true; \
+	fi
 
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
