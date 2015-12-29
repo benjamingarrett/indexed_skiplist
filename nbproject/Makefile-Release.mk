@@ -43,6 +43,7 @@ TESTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}/tests
 # Test Files
 TESTFILES= \
 	${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/indexed_skiplist \
+	${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/indexed_skiplist \
 	${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/indexed_skiplist
 
 # C Compiler Flags
@@ -92,6 +93,10 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/indexed_skiplist: ${TESTDIR}/tests/sk
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
 	${LINK.c}   -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/indexed_skiplist $^ ${LDLIBSOPTIONS} 
 
+${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/indexed_skiplist: ${TESTDIR}/tests/skiplist_test_read_write_delete.o ${OBJECTFILES:%.o=%_nomain.o}
+	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
+	${LINK.c}   -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/indexed_skiplist $^ ${LDLIBSOPTIONS} 
+
 
 ${TESTDIR}/tests/skiplist_test_key_comparisons.o: tests/skiplist_test_key_comparisons.c 
 	${MKDIR} -p ${TESTDIR}/tests
@@ -103,6 +108,12 @@ ${TESTDIR}/tests/skiplist_test_rand_level.o: tests/skiplist_test_rand_level.c
 	${MKDIR} -p ${TESTDIR}/tests
 	${RM} $@.d
 	$(COMPILE.c) -O2 -MMD -MP -MF $@.d -o ${TESTDIR}/tests/skiplist_test_rand_level.o tests/skiplist_test_rand_level.c
+
+
+${TESTDIR}/tests/skiplist_test_read_write_delete.o: tests/skiplist_test_read_write_delete.c 
+	${MKDIR} -p ${TESTDIR}/tests
+	${RM} $@.d
+	$(COMPILE.c) -O2 -MMD -MP -MF $@.d -o ${TESTDIR}/tests/skiplist_test_read_write_delete.o tests/skiplist_test_read_write_delete.c
 
 
 ${OBJECTDIR}/main_nomain.o: ${OBJECTDIR}/main.o main.c 
@@ -135,6 +146,7 @@ ${OBJECTDIR}/indexed_skiplist_nomain.o: ${OBJECTDIR}/indexed_skiplist.o indexed_
 .test-conf:
 	@if [ "${TEST}" = "" ]; \
 	then  \
+	    ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/indexed_skiplist || true; \
 	    ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/indexed_skiplist || true; \
 	    ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/indexed_skiplist || true; \
 	else  \

@@ -9,7 +9,9 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+/*
 #define RUN_TEST  
+*/
 
 uint64_t NON_VALUE = -1;
 uint64_t NON_POSITION = -1;

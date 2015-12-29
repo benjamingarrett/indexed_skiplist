@@ -32,6 +32,12 @@
                      kind="TEST">
         <itemPath>tests/skiplist_test_rand_level.c</itemPath>
       </logicalFolder>
+      <logicalFolder name="f3"
+                     displayName="skiplist_test_read_write_delete"
+                     projectFiles="true"
+                     kind="TEST">
+        <itemPath>tests/skiplist_test_read_write_delete.c</itemPath>
+      </logicalFolder>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -79,6 +85,21 @@
         </ccTool>
         <linkerTool>
           <output>${TESTDIR}/TestFiles/f2</output>
+        </linkerTool>
+      </folder>
+      <folder path="TestFiles/f3">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <output>${TESTDIR}/TestFiles/f3</output>
         </linkerTool>
       </folder>
     </conf>
