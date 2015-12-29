@@ -60,9 +60,11 @@ void test1() {
         fscanf(fp, "%d %d %d\n", &operation[g], &key[g], &status[g]);
     }
     fclose(fp);
+/*
     for(g=0; g<num_operations; g++){
         printf("%d %d %d %d\n", g, operation[g], key[g], status[g]);
     }
+*/
     initialize_skiplist(
         max_levels, &NON_VALUE, &NON_POSITION, KEY_LENGTH, VALUE_LENGTH);
     #ifdef VIEW_PROGRESS
