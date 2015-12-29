@@ -44,6 +44,7 @@ TESTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}/tests
 TESTFILES= \
 	${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/indexed_skiplist \
 	${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/indexed_skiplist \
+	${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/indexed_skiplist \
 	${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/indexed_skiplist
 
 # C Compiler Flags
@@ -85,6 +86,10 @@ ${OBJECTDIR}/indexed_skiplist.o: indexed_skiplist.c
 
 # Build Test Targets
 .build-tests-conf: .build-conf ${TESTFILES}
+${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/indexed_skiplist: ${TESTDIR}/skiplist_test_index_of.o ${OBJECTFILES:%.o=%_nomain.o}
+	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
+	${LINK.c}   -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/indexed_skiplist $^ ${LDLIBSOPTIONS} 
+
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/indexed_skiplist: ${TESTDIR}/tests/skiplist_test_key_comparisons.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
 	${LINK.c}   -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/indexed_skiplist $^ ${LDLIBSOPTIONS} 
@@ -96,6 +101,12 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/indexed_skiplist: ${TESTDIR}/tests/sk
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/indexed_skiplist: ${TESTDIR}/tests/skiplist_test_read_write_delete.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
 	${LINK.c}   -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/indexed_skiplist $^ ${LDLIBSOPTIONS} 
+
+
+${TESTDIR}/skiplist_test_index_of.o: skiplist_test_index_of.c 
+	${MKDIR} -p ${TESTDIR}
+	${RM} $@.d
+	$(COMPILE.c) -O2 -MMD -MP -MF $@.d -o ${TESTDIR}/skiplist_test_index_of.o skiplist_test_index_of.c
 
 
 ${TESTDIR}/tests/skiplist_test_key_comparisons.o: tests/skiplist_test_key_comparisons.c 
@@ -146,6 +157,7 @@ ${OBJECTDIR}/indexed_skiplist_nomain.o: ${OBJECTDIR}/indexed_skiplist.o indexed_
 .test-conf:
 	@if [ "${TEST}" = "" ]; \
 	then  \
+	    ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/indexed_skiplist || true; \
 	    ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/indexed_skiplist || true; \
 	    ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/indexed_skiplist || true; \
 	    ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/indexed_skiplist || true; \

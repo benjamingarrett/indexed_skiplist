@@ -28,7 +28,8 @@ void test1() {
     
     FILE * fp;
     uint64_t max_key, capacity, max_load, * key, g, h, num_anomalies, num_trials;
-    int type, * operation, * status, * result, num_operations, * actual_index;
+    int type, * operation, * status, * result, num_operations, actual_index, * expected_index;
+    int index_trials, index_anomalies;
     unsigned char * k;
     unsigned char KEY[4];
     uint64_t * vp, val;
@@ -52,18 +53,19 @@ void test1() {
     key = calloc(num_operations, sizeof(uint64_t));
     status = calloc(num_operations, sizeof(int));
     result = calloc(num_operations, sizeof(int));
-    actual_index = calloc(num_operations, sizeof(int));
+    expected_index = calloc(num_operations, sizeof(int));
+    index_trials = index_anomalies = 0;
     if(operation==NULL)printf("operation is null\n");
     if(key==NULL)printf("key is null\n");
     if(status==NULL)printf("status is null\n");
     if(result==NULL)printf("result is null\n");
     for(g=0; g<num_operations; g++){
-        fscanf(fp, "%d %d %d %d\n", &operation[g], &key[g], &status[g], &actual_index[g]);
+        fscanf(fp, "%d %d %d %d\n", &operation[g], &key[g], &status[g], &expected_index[g]);
     }
     fclose(fp);
 /*
     for(g=0; g<num_operations; g++){
-        printf("%d %d %d %d\n", g, operation[g], key[g], status[g]);
+        printf("%d %d %d %d %d\n", g, operation[g], key[g], status[g], expected_index[g]);
     }
 */
     initialize_skiplist(
@@ -94,6 +96,12 @@ void test1() {
                     result[g] = FAILURE;
                 } else {
                     result[g] = SUCCESS;
+                    actual_index = index_of(KEY);
+                    index_trials++;
+                    if(actual_index != expected_index[g]){
+                        index_anomalies++;
+                        printf("actual_index != expected_index\n");
+                    }
                 }
                 break;
             case WRITE:
@@ -152,7 +160,8 @@ void test1() {
         }
         num_trials++;
     }
-    printf("trials: %d  anomalies: %d\n", num_trials, num_anomalies);
+    printf("trials:       %d  anomalies:       %d\n", num_trials, num_anomalies);
+    printf("index trials: %d  index anomalies: %d\n", index_trials, index_anomalies);
     
 }
 
