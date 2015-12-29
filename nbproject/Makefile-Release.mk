@@ -86,7 +86,7 @@ ${OBJECTDIR}/indexed_skiplist.o: indexed_skiplist.c
 
 # Build Test Targets
 .build-tests-conf: .build-conf ${TESTFILES}
-${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/indexed_skiplist: ${TESTDIR}/skiplist_test_index_of.o ${OBJECTFILES:%.o=%_nomain.o}
+${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/indexed_skiplist: ${TESTDIR}/tests/skiplist_test_index_of.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
 	${LINK.c}   -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/indexed_skiplist $^ ${LDLIBSOPTIONS} 
 
@@ -103,10 +103,10 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/indexed_skiplist: ${TESTDIR}/tests/sk
 	${LINK.c}   -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/indexed_skiplist $^ ${LDLIBSOPTIONS} 
 
 
-${TESTDIR}/skiplist_test_index_of.o: skiplist_test_index_of.c 
-	${MKDIR} -p ${TESTDIR}
+${TESTDIR}/tests/skiplist_test_index_of.o: tests/skiplist_test_index_of.c 
+	${MKDIR} -p ${TESTDIR}/tests
 	${RM} $@.d
-	$(COMPILE.c) -O2 -MMD -MP -MF $@.d -o ${TESTDIR}/skiplist_test_index_of.o skiplist_test_index_of.c
+	$(COMPILE.c) -O2 -MMD -MP -MF $@.d -o ${TESTDIR}/tests/skiplist_test_index_of.o tests/skiplist_test_index_of.c
 
 
 ${TESTDIR}/tests/skiplist_test_key_comparisons.o: tests/skiplist_test_key_comparisons.c 

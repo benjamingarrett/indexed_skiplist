@@ -86,7 +86,7 @@ ${OBJECTDIR}/indexed_skiplist.o: indexed_skiplist.c
 
 # Build Test Targets
 .build-tests-conf: .build-conf ${TESTFILES}
-${TESTDIR}/TestFiles/f4: ${TESTDIR}/skiplist_test_index_of.o ${OBJECTFILES:%.o=%_nomain.o}
+${TESTDIR}/TestFiles/f4: ${TESTDIR}/tests/skiplist_test_index_of.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
 	${LINK.c}   -o ${TESTDIR}/TestFiles/f4 $^ ${LDLIBSOPTIONS} 
 
@@ -103,10 +103,10 @@ ${TESTDIR}/TestFiles/f3: ${TESTDIR}/tests/skiplist_test_read_write_delete.o ${OB
 	${LINK.c}   -o ${TESTDIR}/TestFiles/f3 $^ ${LDLIBSOPTIONS} 
 
 
-${TESTDIR}/skiplist_test_index_of.o: skiplist_test_index_of.c 
-	${MKDIR} -p ${TESTDIR}
+${TESTDIR}/tests/skiplist_test_index_of.o: tests/skiplist_test_index_of.c 
+	${MKDIR} -p ${TESTDIR}/tests
 	${RM} $@.d
-	$(COMPILE.c) -g -I. -MMD -MP -MF $@.d -o ${TESTDIR}/skiplist_test_index_of.o skiplist_test_index_of.c
+	$(COMPILE.c) -g -I. -MMD -MP -MF $@.d -o ${TESTDIR}/tests/skiplist_test_index_of.o tests/skiplist_test_index_of.c
 
 
 ${TESTDIR}/tests/skiplist_test_key_comparisons.o: tests/skiplist_test_key_comparisons.c 

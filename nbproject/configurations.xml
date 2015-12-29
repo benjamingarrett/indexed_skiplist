@@ -24,7 +24,7 @@
                      displayName="skiplist_test_index_of"
                      projectFiles="true"
                      kind="TEST">
-        <itemPath>skiplist_test_index_of.c</itemPath>
+        <itemPath>tests/skiplist_test_index_of.c</itemPath>
       </logicalFolder>
       <logicalFolder name="f2"
                      displayName="skiplist_test_key_comparisons"
