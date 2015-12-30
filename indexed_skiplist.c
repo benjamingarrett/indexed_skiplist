@@ -354,7 +354,7 @@ void * skiplist_write(unsigned char * key){
             *(x->data+g) = *(key+g);
         }
         
-        /* get memory for several points? */
+        /* get memory for several pointers */
         
         int s = sizeof(snode*) * (level + 1);
 /*
