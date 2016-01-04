@@ -100,7 +100,7 @@ void test1() {
                     index_trials++;
                     if(actual_index != expected_index[g]){
                         index_anomalies++;
-                        printf("actual_index != expected_index\n");
+                        printf("actual_index (%d) != expected_index (%d)\n", actual_index, expected_index[g]);
                     }
                 }
                 break;

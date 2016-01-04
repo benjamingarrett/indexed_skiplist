@@ -5,9 +5,7 @@
 #define SUCCESS 0
 #define FAILURE 1
 
-/*
 #define TRACE  
-*/
 
 uint64_t MAX_LEVELS = 10;
 uint64_t MIN_KEY_LENGTH = 4;
@@ -22,6 +20,7 @@ uint64_t VALUE_LENGTH;
 typedef struct snode {
     unsigned char * data;
     struct snode ** forward;
+    int * width;
 } snode;
 
 typedef struct skiplist {
@@ -68,6 +67,7 @@ void initialize_skiplist(
     for (i = 0; i <= MAX_LEVELS; i++) {
         list->header->forward[i] = list->header;
     }
+    list->header->width = (int *)calloc(MAX_LEVELS+1, sizeof(int));
     list->level = 1;
     list->size = 0;
 }
@@ -375,6 +375,12 @@ void * skiplist_write(unsigned char * key){
             update[i]->forward[i] = x;
         }
         
+        x->width = (int *)calloc(level + 1, sizeof(int));
+        
+        for(i=1; i<=level; i++){
+            x->width[i] = 1;
+        }
+        
         return x->data + KEY_LENGTH;
     }
 }
@@ -492,7 +498,53 @@ int8_t skiplist_delete(unsigned char * key){
     return FAILURE;
 }
 
-uint64_t index_of(unsigned char * key){
+int64_t index_of(unsigned char * key){
     
-    return 880;
+    snode *x;
+    int i, index;
+    
+    #ifdef TRACE
+        printf("skiplist index of, level = %d\n", list->level);
+        printf("1...\n");
+    #endif
+
+    x = list->header;
+    index = 0;
+    for (i = list->level; i >= 1; i--){
+        
+        #ifdef TRACE
+            printf("skiplist searching list at level %d\n", i);
+        #endif
+        
+        while( less_than(x->forward[i]->data, key) ){
+            
+            #ifdef TRACE
+                printf("moving forward->");
+            #endif
+            
+            index += x->width[i];
+            x = x->forward[i];
+            
+        }
+        
+        #ifdef TRACE
+            printf("\n");
+        #endif
+        
+    }
+    
+    #ifdef TRACE
+        printf("skiplist read about to compare key to position... ");
+    #endif
+    if( equals(x->forward[1]->data, key) ){
+        #ifdef TRACE
+            printf("skiplist read found value\n");
+        #endif
+        return index;
+    } else {
+        #ifdef TRACE
+            printf("skiplist read didn't find value\n");
+        #endif
+        return -1;
+    }
 }
