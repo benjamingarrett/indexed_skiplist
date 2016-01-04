@@ -73,7 +73,10 @@ void initialize_skiplist(
 }
 
 int choose_level(){
+    return 1;
+/*
     return rand_level();
+*/
 }
 
 int rand_level(){
@@ -356,13 +359,17 @@ void * skiplist_write(unsigned char * key){
         
         /* get memory for several pointers */
         
+/*
         int s = sizeof(snode*) * (level + 1);
+*/
 /*
         printf("getting memory for x->forward: %d\n", s);
 */
         
+/*
         snode ** y = (snode**)malloc( s );
-        x->forward = y;
+*/
+        x->forward = (snode**)malloc( sizeof(snode*) * (level + 1) );
 /*
         y = malloc( s );
 */
@@ -376,7 +383,12 @@ void * skiplist_write(unsigned char * key){
         }
         
         x->width = (int *)calloc(level + 1, sizeof(int));
-        
+        x->width[1] = 1;
+/*
+        for(i=2; i<=level; i++){
+            
+        }
+*/
         for(i=1; i<=level; i++){
             x->width[i] = 1;
         }
@@ -538,7 +550,7 @@ int64_t index_of(unsigned char * key){
     #endif
     if( equals(x->forward[1]->data, key) ){
         #ifdef TRACE
-            printf("skiplist read found value\n");
+            printf("skiplist read found value at index %d\n", index);
         #endif
         return index;
     } else {

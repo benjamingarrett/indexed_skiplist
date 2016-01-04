@@ -63,11 +63,9 @@ void test1() {
         fscanf(fp, "%d %d %d %d\n", &operation[g], &key[g], &status[g], &expected_index[g]);
     }
     fclose(fp);
-/*
     for(g=0; g<num_operations; g++){
         printf("%d %d %d %d %d\n", g, operation[g], key[g], status[g], expected_index[g]);
     }
-*/
     initialize_skiplist(
         max_levels, &NON_VALUE, &NON_POSITION, KEY_LENGTH, VALUE_LENGTH);
     #ifdef VIEW_PROGRESS
@@ -90,6 +88,9 @@ void test1() {
         
         switch(operation[g]){
             case READ:
+                #ifdef VIEW_PROGRESS
+                    printf("Read %d result %d\n", key[g], status[g]);
+                #endif
                 vp = (uint64_t *)skiplist_read(KEY);
                 val = *vp;
                 if(val == NON_VALUE){
@@ -105,6 +106,9 @@ void test1() {
                 }
                 break;
             case WRITE:
+                #ifdef VIEW_PROGRESS
+                    printf("Write %d result %d\n", key[g], status[g]);
+                #endif
                 vp = (uint64_t *)skiplist_read(KEY);
                 val = *vp;
                 if(val == NON_VALUE){
@@ -120,6 +124,9 @@ void test1() {
                 }
                 break;
             case DELETE:
+                #ifdef VIEW_PROGRESS
+                    printf("Delete %d result %d\n", key[g], status[g]);
+                #endif
                 vp = (uint64_t *)skiplist_read(KEY);
                 val = *vp;
                 if(val == NON_VALUE){
@@ -146,9 +153,10 @@ void test1() {
             else {
                 printf("Operation %d successful\n", g);
             }
+*/
             printf("skiplist_dump: ");
             skiplist_full_dump();
-*/
+            printf("\n\n");
         #endif
     }
         
