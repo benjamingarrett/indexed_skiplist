@@ -73,9 +73,9 @@ void initialize_skiplist(
 }
 
 int choose_level(){
-    return 1;
-/*
     return rand_level();
+/*
+    return 1;
 */
 }
 
@@ -130,7 +130,7 @@ void skiplist_full_dump(){
     
     x = list->header;
     for (g = list->level; g >= 1; g--) {
-        printf("%d:", g);
+        printf("%d: HEAD (%d)->", g, list->header->width[g]);
         while( x && x->forward[g] != list->header ){
             printf("[");
             for(h=0; h<KEY_LENGTH; h++){
@@ -140,6 +140,7 @@ void skiplist_full_dump(){
             for(h=KEY_LENGTH; h<(KEY_LENGTH+VALUE_LENGTH); h++){
                 printf("%x ", x->forward[g]->data[h]);
             }
+            printf(" - (%d)", x->width[g]);
             printf("]->");
             x = x->forward[g];
         }
@@ -293,7 +294,7 @@ void * skiplist_write(unsigned char * key){
     
     int i, g, level;
     snode * update[MAX_LEVELS+1];
-    snode * x;
+    snode * x, * y, * z;
     
     #ifdef TRACE
         printf("skiplist write\n");
@@ -357,22 +358,7 @@ void * skiplist_write(unsigned char * key){
             *(x->data+g) = *(key+g);
         }
         
-        /* get memory for several pointers */
-        
-/*
-        int s = sizeof(snode*) * (level + 1);
-*/
-/*
-        printf("getting memory for x->forward: %d\n", s);
-*/
-        
-/*
-        snode ** y = (snode**)malloc( s );
-*/
         x->forward = (snode**)malloc( sizeof(snode*) * (level + 1) );
-/*
-        y = malloc( s );
-*/
         
         /* for all levels from 1 to the chosen level, point the successor of the new item */
         /* to the successor of the temp array for that level */
@@ -384,13 +370,27 @@ void * skiplist_write(unsigned char * key){
         
         x->width = (int *)calloc(level + 1, sizeof(int));
         x->width[1] = 1;
-/*
         for(i=2; i<=level; i++){
-            
+            #ifdef TRACE
+                printf("skiplist_write: affecting widths on level %d\n", i);
+            #endif
+            y = x;
+            x->width[i] = y->width[i-1];
+            while( less_than(x->forward[i]->data, y->forward[i-1]->data) ){
+                y = y->forward[i-1];
+                x->width[i] += y->width[i-1];
+            }
         }
-*/
-        for(i=1; i<=level; i++){
-            x->width[i] = 1;
+        
+        update[1]->width[1] = 1;
+        for(i=2; i<=level; i++){
+            y = update[i-1];
+            z = update[i];
+            z->width[i] = y->width[i-1];
+            while( less_than( z->forward[i]->data, y->forward[i-1]->data) ){
+                y = y->forward[i-1];
+                z->width[i] += y->width[i-1];
+            }
         }
         
         return x->data + KEY_LENGTH;
