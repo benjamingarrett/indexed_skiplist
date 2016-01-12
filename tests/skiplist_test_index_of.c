@@ -101,7 +101,9 @@ void test1() {
                     index_trials++;
                     if(actual_index != expected_index[g]){
                         index_anomalies++;
-                        printf("actual_index (%d) != expected_index (%d)\n", actual_index, expected_index[g]);
+                        printf("actual_index (%d) != expected_index (%d)  ANOMALY!!!\n", actual_index, expected_index[g]);
+                    } else {
+                        printf("actual_index (%d) == expected_index (%d)\n", actual_index, expected_index[g]);
                     }
                 }
                 break;
@@ -156,7 +158,7 @@ void test1() {
 */
             printf("skiplist_dump: ");
             skiplist_full_dump();
-            printf("\n\n");
+            printf("\n\n========\n\n");
         #endif
     }
         
