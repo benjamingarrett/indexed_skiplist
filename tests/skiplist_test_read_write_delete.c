@@ -9,9 +9,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-/*
 #define RUN_TEST  
-*/
 
 #define VIEW_PROGRESS  
 #define READ 0
