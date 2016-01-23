@@ -9,9 +9,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-/*
 #define RUN_TEST  
-*/
 
 #define VIEW_PROGRESS  
 #define READ 0
@@ -158,8 +156,16 @@ void test1() {
                 printf("Operation %d successful\n", g);
             }
 */
-            printf("skiplist_dump: ");
+            printf("\n\ntest code\n");
+            printf("After operation: %d %d %d %d\n", g, operation[g], key[g], status[g]);
+            printf("skiplist_dump:\n");
+            
+/*
             skiplist_full_dump();
+*/
+            
+            skiplist_premium_dump();
+            
             printf("\n\n========\n\n");
         #endif
     }

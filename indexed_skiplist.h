@@ -27,6 +27,7 @@ extern "C" {
     uint8_t less_than(unsigned char * k1, unsigned char * k2);
     void skiplist_dump();
     void skiplist_full_dump();
+    void skiplist_premium_dump();
     
     void * skiplist_read(unsigned char * key);
     void * skiplist_write(unsigned char * key);

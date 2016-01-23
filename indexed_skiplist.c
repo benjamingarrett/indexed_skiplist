@@ -5,9 +5,7 @@
 #define SUCCESS 0
 #define FAILURE 1
 
-/*
 #define TRACE  
-*/
 
 uint64_t MAX_LEVELS = 10;
 uint64_t MIN_KEY_LENGTH = 4;
@@ -25,9 +23,6 @@ typedef struct snode {
     unsigned char * data;
     struct snode ** forward;
     int * width;
-/*
-    char * is_header;
-*/
 } snode;
 
 typedef struct skiplist {
@@ -151,6 +146,13 @@ void view_data(unsigned char * k){
     }
 }
 
+void view_snode(snode * node, int g){
+
+    printf("{[%d](%d)[%d]=", node, node->width[g], node->forward[g]);
+    view_key(node->data);
+    printf("}");
+}
+
 void skiplist_dump(){
     
     int g;
@@ -168,6 +170,25 @@ void skiplist_dump(){
     printf("NIL\n");
 }
 
+void skiplist_premium_dump(){
+    
+    int g;
+    snode * x;
+    
+    for(g=list->level; g>=1; g--){
+        x = list->header;
+        printf("%d: ", g); view_snode(x, g);
+        x = x->forward[g];
+        printf("->");view_snode(x, g);
+        while( x && x->forward[g] != list->header ){
+            x = x->forward[g];
+            printf("->");view_snode(x, g);
+        }
+        x = x->forward[g];
+        printf("->");view_snode(x, g);printf("\n");
+    }
+}
+
 void skiplist_full_dump(){
     
     int g, h;
@@ -175,14 +196,14 @@ void skiplist_full_dump(){
     snode * x;
     
     #ifdef TRACE
-        printf("skiplist full dump, level = %d\n", list->level);
+        printf("skiplist full dump, list->level = %d\n", list->level);
     #endif
     
     x = list->header;
     for (g = list->level; g >= 1; g--) {
         
-        printf("%d: HEAD (%d)->",
-                g, list->header->width[g]);
+        printf("%d: HEAD [%d](%d)->",
+                g, list->header, list->header->width[g]);
         
 /*
         printf("%d: HEAD (%d),(%d)->", 
@@ -194,7 +215,7 @@ void skiplist_full_dump(){
             view_key(x->forward[g]->data);
             printf(" - ");
             view_data(x->forward[g]->data);
-            printf(" - (%d)", x->width[g]);
+            printf(" - [%d](%d)", x, x->width[g]);
 /*
             printf(",(%d)", x->is_header[g]);
 */
@@ -312,6 +333,10 @@ snode * find_node(unsigned char * key){
         }
     }
     if( equals(x->forward[1]->data, key) ){
+/*
+        printf("find node found it: "); view_key(x->forward[1]->data); printf("[%d](%d)\n", x->forward[1], x->width[1]);
+*/
+        view_snode(x, 1);
         return x->forward[1];
     } else {
         return NULL;
@@ -340,51 +365,11 @@ void * skiplist_read(unsigned char * key){
         #endif
         return NON_VALUE;
     }
-
-    /*
-    x = list->header;
-    for (i = list->level; i >= 1; i--){
-        
-        #ifdef TRACE
-            printf("skiplist searching list at level %d\n", i);
-        #endif
-        
-        while( less_than(x->forward[i]->data, key) ){
-            
-            #ifdef TRACE
-                printf("moving forward->");
-            #endif
-            
-            x = x->forward[i];
-            
-        }
-        
-        #ifdef TRACE
-            printf("\n");
-        #endif
-        
-    }
-    
-    #ifdef TRACE
-        printf("skiplist read about to compare key to position... ");
-    #endif
-    if( equals(x->forward[1]->data, key) ){
-        #ifdef TRACE
-            printf("skiplist read found value\n");
-        #endif
-        return x->forward[1]->data + KEY_LENGTH;
-    } else {
-        #ifdef TRACE
-            printf("skiplist read didn't find value\n");
-        #endif
-        return NON_VALUE;
-    }
-     */
 }
 
 void * skiplist_write(unsigned char * key){
     
-    int i, g, level;
+    int i, g, level, temp_width;
     snode * update[MAX_LEVELS+1];
     snode * x, * y, * z;
     
@@ -403,9 +388,6 @@ void * skiplist_write(unsigned char * key){
     if ( equals(key, x->data) ) {
         return x->data + KEY_LENGTH;
     } else {
-        #ifdef TRACE
-            printf("item not found\n");
-        #endif
         level = choose_level();
         if (level > list->level) {
             for (i = list->level+1; i <= level; i++) {
@@ -434,16 +416,27 @@ void * skiplist_write(unsigned char * key){
             x->forward[i] = update[i]->forward[i];
             update[i]->forward[i] = x;
         }
+/*
         x->width[1] = 1;
+*/
         
         #ifdef TRACE
+/*
             printf("Just pointed update to new data\n");
             for(i=level; i>=1; i--){
                 printf("%d: ", i);view_key(update[i]->data);printf("-->");view_key(update[i]->forward[i]->data);printf("-->");view_key(update[i]->forward[i]->forward[i]->data);printf("\n");
             }
             printf("----\n");
             printf("skiplist_dump: ");
+*/
+            
+/*
             skiplist_full_dump();
+*/
+            
+            printf("done inserting data\n");
+            skiplist_premium_dump();
+            
             printf("\n\n");
         #endif
         
@@ -453,19 +446,34 @@ void * skiplist_write(unsigned char * key){
                 printf("skiplist write: affecting new widths, level = %d\n", level);
             #endif
         
+            x = find_node(key);
+            x->width[1] = 1;
+            
+
+            
+/*
+            printf("find node found: "); view_key(x->data); printf("[%d](%d)\n", x, x->width[1]);
+            printf("skiplist_dump: ");
+            skiplist_full_dump();
+            skiplist_premium_dump();
+            printf("\n\n");
+*/
+            
+            
             for(i=2; i<=level; i++){
                 
+/*
                 #ifdef TRACE
+*/
                     printf("skiplist_write: affecting new widths on level %d\n", i);
+/*
                 #endif
+*/
                 
-                
-                    
-                    
                 y = x;
                 x->width[i] = y->width[i-1];
                 #ifdef TRACE
-                    printf("initializing new width to %d of node: ", y->width[i-1]);view_key(y->data);printf("\n");/*printf("(%d)\n", y->is_header[i-1]);*/
+                    printf("initializing new width to %d of node: ", y->width[i-1]); view_snode(y, i-1);printf("\n");
                     printf("first comparison\n");
                     if( less_than( x->forward[i]->data, y->forward[i-1]->data ) ){
                         view_key(x->forward[i]->data);printf(" < ");view_key(y->forward[i-1]->data);printf("\n");
@@ -487,63 +495,45 @@ void * skiplist_write(unsigned char * key){
             }
 
                 
+/*
             #ifdef TRACE
+*/
+                printf("new widths done:\n");
                 printf("skiplist_dump: ");
+                
+/*
                 skiplist_full_dump();
+*/
+                
+                skiplist_premium_dump();
+                
                 printf("\n\n");
-            #endif
-                
-                
-            #ifdef TRACE
                 printf("skiplist write: affecting old widths, level = %d\n", level);
+/*
             #endif
-                
+*/
+/*
+            printf("update[1]: ");view_key(update[1]->data); printf("\n");
+*/
             update[1]->width[1] = 1;
+            y = find_prior_insertion_point(key);
+/*
+            printf("prior insertion point: ");view_key(y->data);printf("\n");
+*/
+            for(i=2; i<=list->level; i++){
+                temp_width = y->width[i-1];
+                z = y;
                 
-            for(i=2; i<=level; i++){
+/*
+                printf("old widths i=%d\n", i);
+                printf("comparing: ");view_key(z->forward[i-1]->data);printf(" to ");view_key(y->forward[i]->data);printf("\n");
+*/
                 
-                #ifdef TRACE
-                    printf("skiplist_write: affecting old widths on level %d\n", i);
-                #endif
-                
-                y = update[i-1];
-                z = update[i];
-
-                #ifdef TRACE
-                    printf("update array and successors\n");
-                    for(g=level; g>=1; g--){
-                        printf("%d: ", g);view_key(update[g]->data);printf("-->");view_key(update[g]->forward[g]->data);printf("-->");view_key(update[g]->forward[g]->forward[g]->data);printf("\n");
-                    }
-                    printf("----\n");
-                    printf("update[%d]->data = ", i);view_key(z->data);printf("\n"); 
-                    printf("update[%d]->data = ", i-1);view_key(y->data);printf("\n");
-                #endif
-                
-                
-                z = list->header;
-                y = list->header;
-                                
-                int temp_width = y->width[i-1];
-                
-                #ifdef TRACE
-                    printf("initializing temp width to %d of node: ", y->width[i-1]);view_key(y->data);printf("\n");/*printf("(%d)\n", y->is_header[i-1]);*/
-                    if( less_than(y->forward[i-1]->data, z->forward[i]->data) ){
-                        view_key(y->forward[i-1]->data);printf(" < ");view_key(z->forward[i]->data);printf("\n");
-                    } else {
-                        view_key(y->forward[i-1]->data);printf(" >= ");view_key(z->forward[i]->data);printf("\n");
-                    }
-                #endif
-                while( less_than(y->forward[i-1]->data, z->forward[i]->data) ){
-                    #ifdef TRACE
-                        view_key(y->forward[i-1]->data);printf(" < ");view_key(z->forward[i]->data);printf("\n");
-                    #endif
-                    y = y->forward[i-1];
-                    temp_width += y->width[i-1];
-                    #ifdef TRACE
-                        printf("Adding %d to temp width of node: ", y->width[i-1]);view_key(y->data);printf("\n");/*printf("(%d)\n", y->is_header[i-1]);*/
-                    #endif
+                while( less_than(z->forward[i-1]->data, y->forward[i]->data) ){
+                    z = z->forward[i-1];
+                    temp_width += z->width[i-1];
                 }
-                z->width[i] = temp_width;
+                y->width[i] = temp_width;
             }
 
         }
@@ -562,7 +552,13 @@ int8_t skiplist_delete(unsigned char * key){
     
     #ifdef TRACE
         printf("skiplist_delete\n");
+        
+/*
         skiplist_full_dump();
+*/
+        
+        skiplist_premium_dump();
+        
     #endif
     
     
