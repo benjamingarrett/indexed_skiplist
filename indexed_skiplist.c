@@ -307,18 +307,22 @@ uint8_t less_than(unsigned char * k1, unsigned char * k2){
 
 snode * find_prior_insertion_point(unsigned char * key){
     
-    snode * x, * p;
+    snode * x;
     
+    printf("find prior insertion point: ");view_key(key);printf("\n");
+    printf("compare(header): ");view_key(list->header->forward[list->level]->data);printf(" and ");view_key(key);printf("\n");
     if( ! less_than(list->header->forward[list->level]->data, key) ){
+        printf("found prior insertion point(header): "); view_snode(list->header, 1); printf("\n");
         return list->header;
     }
     x = list->header->forward[list->level];
-    p = x;
+    printf("compare(initially): ");view_key(x->forward[list->level]->data);printf(" and ");view_key(key);printf("\n");
     while( less_than(x->forward[list->level]->data, key) ){
-        p = x;
         x = x->forward[list->level];
+        printf("compare: ");view_key(x->forward[list->level]->data);printf(" and ");view_key(key);printf("\n");
     }
-    return p;
+    printf("found prior insertion point: "); view_snode(x, 1); printf("\n");
+    return x;
 }
 
 snode * find_node(unsigned char * key){
@@ -498,7 +502,7 @@ void * skiplist_write(unsigned char * key){
 /*
             #ifdef TRACE
 */
-                printf("new widths done:\n");
+                printf("\n\nnew widths done:\n");
                 printf("skiplist_dump: ");
                 
 /*
@@ -517,9 +521,9 @@ void * skiplist_write(unsigned char * key){
 */
             update[1]->width[1] = 1;
             y = find_prior_insertion_point(key);
-/*
-            printf("prior insertion point: ");view_key(y->data);printf("\n");
-*/
+            
+            printf("prior insertion point: "); view_snode(y, 1); printf("\n");
+            
             for(i=2; i<=list->level; i++){
                 temp_width = y->width[i-1];
                 z = y;

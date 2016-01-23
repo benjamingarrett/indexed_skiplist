@@ -157,7 +157,8 @@ void test1() {
             }
 */
             printf("\n\ntest code\n");
-            printf("After operation: %d %d %d %d\n", g, operation[g], key[g], status[g]);
+            printf("After operation: %d %d %d %d - ", g, operation[g], key[g], status[g]);
+            view_key(KEY);printf("\n");
             printf("skiplist_dump:\n");
             
 /*

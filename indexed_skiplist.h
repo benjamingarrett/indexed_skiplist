@@ -28,6 +28,7 @@ extern "C" {
     void skiplist_dump();
     void skiplist_full_dump();
     void skiplist_premium_dump();
+    void view_key(unsigned char * key);
     
     void * skiplist_read(unsigned char * key);
     void * skiplist_write(unsigned char * key);
