@@ -30,6 +30,7 @@ void test1() {
     uint64_t max_key, capacity, max_load, * key, g, h, num_anomalies, num_trials;
     int type, * operation, * status, * result, num_operations, actual_index, * expected_index;
     int index_trials, index_anomalies;
+    int * index_anomaly;
     unsigned char * k;
     unsigned char KEY[4];
     uint64_t * vp, val;
@@ -54,6 +55,7 @@ void test1() {
     status = calloc(num_operations, sizeof(int));
     result = calloc(num_operations, sizeof(int));
     expected_index = calloc(num_operations, sizeof(int));
+    index_anomaly = calloc(num_operations, sizeof(int));
     index_trials = index_anomalies = 0;
     if(operation==NULL)printf("operation is null\n");
     if(key==NULL)printf("key is null\n");
@@ -100,6 +102,7 @@ void test1() {
                     actual_index = index_of(KEY);
                     index_trials++;
                     if(actual_index != expected_index[g]){
+                        index_anomaly[index_anomalies] = g;
                         index_anomalies++;
                         printf("actual_index (%d) != expected_index (%d)  ANOMALY!!!\n", actual_index, expected_index[g]);
                     } else {
@@ -181,7 +184,13 @@ void test1() {
     }
     printf("trials:       %d  anomalies:       %d\n", num_trials, num_anomalies);
     printf("index trials: %d  index anomalies: %d\n", index_trials, index_anomalies);
-    
+    if(index_anomalies>0){
+        printf("Index anomalies occurred at: ");
+        for(g=0; g<index_anomalies; g++){
+            printf("%d ", index_anomaly[g]);
+        }
+        printf("\n");
+    }
 }
 
 
