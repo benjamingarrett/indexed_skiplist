@@ -11,7 +11,9 @@
 
 #define RUN_TEST  
 
+/*
 #define VIEW_PROGRESS  
+*/
 #define READ 0
 #define WRITE 1
 #define DELETE 2

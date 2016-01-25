@@ -5,7 +5,9 @@
 #define SUCCESS 0
 #define FAILURE 1
 
+/*
 #define TRACE  
+*/
 
 uint64_t MAX_LEVELS = 10;
 uint64_t MIN_KEY_LENGTH = 4;
@@ -66,10 +68,11 @@ void initialize_skiplist(
         list->header->data[i] = 0xff;
     }
     list->header->forward = (snode **)malloc(sizeof(snode*) * (MAX_LEVELS+1));
+    list->header->width = (int *)calloc(MAX_LEVELS+1, sizeof(int));
     for (i = 0; i <= MAX_LEVELS; i++) {
         list->header->forward[i] = list->header;
+        list->header->width[i] = 1;
     }
-    list->header->width = (int *)calloc(MAX_LEVELS+1, sizeof(int));
     list->level = 1;
     list->size = 0;
     
@@ -109,9 +112,9 @@ int choose_level(){
     
     int level;
     
-    level = test_level[p++%NUM_TEST_LEVELS];
-/*
     level = rand_level();
+/*
+    level = test_level[p++%NUM_TEST_LEVELS];
     level = 1;
 */
     
@@ -315,6 +318,18 @@ uint8_t less_than(unsigned char * k1, unsigned char * k2){
     return FALSE;
 }
 
+int is_max_key(unsigned char * key){
+    
+    int g;
+    
+    for(g=0; g<KEY_LENGTH; g++){
+        if( *(key+g) != 0xff ){
+            return FALSE;
+        }
+    }
+    return TRUE;
+}
+
 snode * find_prior_insertion_point(unsigned char * key){
     
     snode * x;
@@ -349,8 +364,8 @@ snode * find_node(unsigned char * key){
     if( equals(x->forward[1]->data, key) ){
 /*
         printf("find node found it: "); view_key(x->forward[1]->data); printf("[%d](%d)\n", x->forward[1], x->width[1]);
-*/
         view_snode(x, 1);
+*/
         return x->forward[1];
     } else {
         return NULL;
@@ -409,13 +424,6 @@ void * skiplist_write(unsigned char * key){
             }
             list->level = level;
         }
-        #ifdef TRACE
-            printf("done making update array:\n");
-            for(i=level; i>=1; i--){
-                printf("%d: ", i);view_snode(update[i], i); printf("-->"); view_snode(update[i]->forward[i], i); printf("-->"); view_snode(update[i]->forward[i]->forward[i], i);printf("\n");
-            }
-            printf("----\n");
-        #endif
         w = (snode *)malloc(sizeof(snode));
         if( w == NULL ){
             return NON_POSITION;
@@ -438,19 +446,20 @@ void * skiplist_write(unsigned char * key){
                 
         if(UPDATE_WIDTHS_ON_WRITE){
         
-            #ifdef TRACE
-                printf("skiplist write: affecting new widths, chosen level = %d\n", level);
-            #endif
-        
             w = find_node(key);
+            #ifdef TRACE
+                printf("update new widths, chosen level = %d\n", level);
+                printf("found new node ");view_snode(w,1);printf("\n");
+            #endif
             w->width[1] = 1;
-                        
             for(i=2; i<=level; i++){
                 y = w;
                 w->width[i] = y->width[i-1];                    
-                while( less_than( w->forward[i]->data, y->forward[i-1]->data ) ){
+                printf("compare ");view_snode(y->forward[i-1],i-1);printf(",");view_snode(w->forward[i],i);printf("\n");
+                while( less_than( y->forward[i-1]->data, w->forward[i]->data ) ){
                     y = y->forward[i-1];
                     w->width[i] += y->width[i-1];
+                    printf("compare ");view_snode(y->forward[i-1],i-1);printf(",");view_snode(w->forward[i],i);printf("\n");
                 }
             }
 
@@ -459,60 +468,40 @@ void * skiplist_write(unsigned char * key){
                 printf("skiplist_dump: ");                
                 skiplist_premium_dump();
                 printf("\n\n");
-                printf("skiplist write: affecting old widths, level = %d\n", level);
+                printf("update old widths, level = %d\n", level);
+                printf("look at update\n");
+                for(i=level; i>=1; i--){
+                    printf("%d: ", i);view_snode(update[i], i); printf("-->"); view_snode(update[i]->forward[i], i); printf("-->"); view_snode(update[i]->forward[i]->forward[i], i);printf("\n");
+                }
+                printf("----\n");
             #endif
 
             update[1]->width[1] = 1;
             for(i=2; i<=level; i++){
                 x = find_node(update[i]->data);
                 y = x;
-                x->width[i] = y->width[i-1];
-                while( less_than( x->forward[i]->data, y->forward[i-1]->data ) ){
-                    y = y->forward[i-1];
-                    x->width[i] += y->width[i-1];
-                }
-            }
-            
-            
-            
-            
-/*
-            w = find_prior_insertion_point(key);
-            printf("prior insertion point: "); view_snode(w, 1); printf("\n");
-            for(i=2; i<=list->level; i++){
-                y = w;
-                z = w;
-                printf("%d: ", i);view_snode(w, i);printf("\n");
-                printf("comparing (initially) ");view_key(y->data);printf(" - ");view_key(key);printf("\n");
-                while( less_than( y->data, key ) ){
-                    temp_width = 0;
-                    printf("comparing (initially internal) ");view_key(y->data);printf(" - ");view_key(key);printf("\n");
-                    while( less_than( y->forward[i]->data, z->forward[i-1]->data ) ){
-                        temp_width += z->width[i-1];
-                        z = z->forward[i-1];
-                        printf("comparing (internal) ");view_key(y->forward[i]->data);printf(" - ");view_key(z->forward[i-1]->data);printf("\n");
-                    }
-                    y->width[i] = temp_width;
-                    y = y->forward[i];
-                    printf("comparing (outer) ");view_key(y->data);printf(" - ");view_key(key);printf("\n");
-                }
-            }
-*/
-            
-/*
-            y = find_prior_insertion_point(key);
-            printf("prior insertion point: "); view_snode(y, 1); printf("\n");
-            for(i=2; i<=list->level; i++){
+                printf("found update[%d]:",i);view_snode(x,i);printf("\n");
+                printf("lower width=%d\n",y->width[i-1]);
                 temp_width = y->width[i-1];
-                z = y;
-                while( less_than(z->forward[i-1]->data, y->forward[i]->data) ){
-                    z = z->forward[i-1];
-                    temp_width += z->width[i-1];
+                while( less_than( y->forward[i-1]->data, x->forward[i]->data) ){
+                    y = y->forward[i-1];
+                    temp_width += y->width[i-1];
+                    printf("adding %d\n",y->width[i-1]);
                 }
-                y->width[i] = temp_width;
-            }
-*/
+                printf("temp_width=%d\n",temp_width);
+                x->width[i] = temp_width;
+            }                
 
+            if(level < MAX_LEVELS){
+                x = list->header;
+                for(i=list->level; i>level; i--){
+                    while( less_than( x->forward[i]->data, key ) ){
+                        x = x->forward[i];
+                    }
+                    x->width[i]++;
+                }
+            }
+            
         }
 
         return w->data + KEY_LENGTH;
