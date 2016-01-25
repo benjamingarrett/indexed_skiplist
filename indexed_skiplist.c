@@ -5,9 +5,7 @@
 #define SUCCESS 0
 #define FAILURE 1
 
-/*
 #define TRACE  
-*/
 
 uint64_t MAX_LEVELS = 10;
 uint64_t MIN_KEY_LENGTH = 4;
@@ -20,6 +18,7 @@ uint64_t KEY_LENGTH;
 uint64_t VALUE_LENGTH;
 
 int UPDATE_WIDTHS_ON_WRITE = TRUE;
+int UPDATE_WIDTHS_ON_DELETE = TRUE;
 
 typedef struct snode {
     unsigned char * data;
@@ -438,61 +437,33 @@ void * skiplist_write(unsigned char * key){
             w->forward[i] = update[i]->forward[i];
             update[i]->forward[i] = w;
         }
-        #ifdef TRACE
-            printf("\ndone inserting data\n");
-            skiplist_premium_dump();
-            printf("\n\n");        
-        #endif        
                 
         if(UPDATE_WIDTHS_ON_WRITE){
         
             w = find_node(key);
-            #ifdef TRACE
-                printf("update new widths, chosen level = %d\n", level);
-                printf("found new node ");view_snode(w,1);printf("\n");
-            #endif
             w->width[1] = 1;
             for(i=2; i<=level; i++){
                 y = w;
                 w->width[i] = y->width[i-1];                    
-                printf("compare ");view_snode(y->forward[i-1],i-1);printf(",");view_snode(w->forward[i],i);printf("\n");
                 while( less_than( y->forward[i-1]->data, w->forward[i]->data ) ){
                     y = y->forward[i-1];
                     w->width[i] += y->width[i-1];
-                    printf("compare ");view_snode(y->forward[i-1],i-1);printf(",");view_snode(w->forward[i],i);printf("\n");
                 }
             }
-
-            #ifdef TRACE
-                printf("\n\nnew widths done:\n");
-                printf("skiplist_dump: ");                
-                skiplist_premium_dump();
-                printf("\n\n");
-                printf("update old widths, level = %d\n", level);
-                printf("look at update\n");
-                for(i=level; i>=1; i--){
-                    printf("%d: ", i);view_snode(update[i], i); printf("-->"); view_snode(update[i]->forward[i], i); printf("-->"); view_snode(update[i]->forward[i]->forward[i], i);printf("\n");
-                }
-                printf("----\n");
-            #endif
 
             update[1]->width[1] = 1;
             for(i=2; i<=level; i++){
                 x = find_node(update[i]->data);
                 y = x;
-                printf("found update[%d]:",i);view_snode(x,i);printf("\n");
-                printf("lower width=%d\n",y->width[i-1]);
                 temp_width = y->width[i-1];
                 while( less_than( y->forward[i-1]->data, x->forward[i]->data) ){
                     y = y->forward[i-1];
                     temp_width += y->width[i-1];
-                    printf("adding %d\n",y->width[i-1]);
                 }
-                printf("temp_width=%d\n",temp_width);
                 x->width[i] = temp_width;
             }                
 
-            if(level < MAX_LEVELS){
+            if(level < list->level){
                 x = list->header;
                 for(i=list->level; i>level; i--){
                     while( less_than( x->forward[i]->data, key ) ){
@@ -510,117 +481,46 @@ void * skiplist_write(unsigned char * key){
 
 int8_t skiplist_delete(unsigned char * key){
     
-    int i;
-    snode *update[MAX_LEVELS + 1];
-    snode *x;
-    
-    int tmp_cnt;
+    int i, tmp_cnt;
+    snode * update[MAX_LEVELS + 1];
+    snode * x, * y;
     
     #ifdef TRACE
         printf("skiplist_delete\n");
-        
-/*
-        skiplist_full_dump();
-*/
-        
         skiplist_premium_dump();
-        
     #endif
-    
-    
-    
-    x = list->header;
-    
-    #ifdef TRACE
-        printf("first value is: ");
-        view_data(x->data);
-        printf("\n");
-        printf("next value is: ");
-        if(x->forward){
-            view_data(x->forward[list->level]->data);
-            printf("\n");
-        } else {
-            printf("NIL\n");
-        }
-    #endif
-    
+
+    x = list->header;    
     for (i = list->level; i >= 1; i--) {
-        
-        #ifdef TRACE
-            printf("finding key at level %d\n", i);
-            tmp_cnt = 0;
-        #endif
-        
-        while( less_than(x->forward[i]->data, key) ){
-            
-            #ifdef TRACE
-                printf("moving forward at level %d, because data is: ", i);
-                view_data(x->forward[i]->data);
-                printf("\n");
-                tmp_cnt++;
-            #endif
-            
+        while( less_than(x->forward[i]->data, key) ){            
             x = x->forward[i];
         }
-        
-        #ifdef TRACE
-            printf("found key at level %d after %d iterations\n", i, tmp_cnt);
-        #endif
-
         update[i] = x;
-        
-        #ifdef TRACE
-            printf("update[%d] is now: ", i);
-            view_data(update[i]->data);
-            printf("\n");
-        #endif
-        
     }
-    
     x = x->forward[1];
-    
-    if ( equals(x->data, key) ) {
-        
-        #ifdef TRACE
-            printf("skiplist delete found key, level = %d\n", list->level);
-        #endif
-        
-        for (i = 1; i <= list->level; i++) {
-            
-            #ifdef TRACE
-                printf("skiplist delete loop %d: ", i);
-            #endif
-            
-            if (update[i]->forward[i] != x){
-                
-                #ifdef TRACE
-                    printf("this isn't the intended node. Break!\n");
-                #endif
-                break;
-            }
-            
-            #ifdef TRACE
-                if( ! x->forward[i] ){
-                    printf("skiplist delete x->forward doesn't exist\n");
-                } else {
-                    printf("skiplist delete x->forward has value: ");
-                    view_data( x->forward[i]->data );
-                    printf("\n");
+    if( equals(x->data, key) ) {        
+        for(i = 1; i <= list->level; i++) {
+            if(update[i]->forward[i] != x){
+/*
+                printf("%d: this isn't the intended node. Break!\n", i);
+*/
+                printf("%d: this isn't the intended node.\n", i);
+                if(UPDATE_WIDTHS_ON_DELETE){
+                    update[i]->width[i]--;
                 }
-            #endif
-            
-            update[i]->forward[i] = x->forward[i];
-            
+/*
+                break;
+*/
+            } else {
+                if(UPDATE_WIDTHS_ON_DELETE){
+                    update[i]->width[i] = update[i]->width[i] + x->width[i] - 1;
+                }
+                update[i]->forward[i] = x->forward[i];
+            }
         }
-        
         skiplist_node_free(x);
-        
         while (list->level > 1 && list->header->forward[list->level] == list->header){
             list->level--;
-            
-            #ifdef TRACE
-                printf("skiplist delete decrementing level to %d\n", list->level);
-            #endif
         }
         return SUCCESS;
     }
@@ -631,49 +531,19 @@ int64_t index_of(unsigned char * key){
     
     snode *x;
     int i, index;
-    
-    #ifdef TRACE
-        printf("skiplist index of, level = %d\n", list->level);
-        printf("1...\n");
-    #endif
 
     x = list->header;
     index = 0;
     for (i = list->level; i >= 1; i--){
-        
-        #ifdef TRACE
-            printf("skiplist searching list at level %d\n", i);
-        #endif
-        
         while( less_than(x->forward[i]->data, key) ){
-            
-            #ifdef TRACE
-                printf("moving forward->");
-            #endif
-            
             index += x->width[i];
             x = x->forward[i];
-            
         }
-        
-        #ifdef TRACE
-            printf("\n");
-        #endif
-        
     }
     
-    #ifdef TRACE
-        printf("skiplist read about to compare key to position... ");
-    #endif
     if( equals(x->forward[1]->data, key) ){
-        #ifdef TRACE
-            printf("skiplist read found value at index %d\n", index);
-        #endif
         return index;
     } else {
-        #ifdef TRACE
-            printf("skiplist read didn't find value\n");
-        #endif
         return -1;
     }
 }
