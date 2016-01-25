@@ -5,7 +5,9 @@
 #define SUCCESS 0
 #define FAILURE 1
 
+/*
 #define TRACE  
+*/
 
 uint64_t MAX_LEVELS = 10;
 uint64_t MIN_KEY_LENGTH = 4;
@@ -243,30 +245,11 @@ uint8_t equals(unsigned char * k1, unsigned char * k2){
     
     int g;
     
-/*
-    printf("equals\n");
-    printf("first value: ");
-    for(g=0; g<KEY_LENGTH; g++){
-        printf("%x ", *(k1+g));
-    }
-    printf("\nsecond value: ");
-    for(g=0; g<KEY_LENGTH; g++){
-        printf("%x ", *(k2+g));
-    }
-    printf("\n");
-*/
-    
     for(g=0; g<KEY_LENGTH; g++){
         if( *(k1+g) != *(k2+g) ){
-/*
-            printf("equals returning FALSE\n");
-*/
             return FALSE;
         }
     }
-/*
-    printf("equals returning TRUE\n");
-*/
     return TRUE;
 }
 
@@ -274,46 +257,15 @@ uint8_t less_than(unsigned char * k1, unsigned char * k2){
     
     int g;
     
-/*
-    #ifdef TRACE
-        printf("less than\n");
-        printf("first value: ");
-        for(g=0; g<KEY_LENGTH; g++){
-            printf("%x ", *(k1+g));
-        }
-        printf("\nsecond value: ");
-        for(g=0; g<KEY_LENGTH; g++){
-            printf("%x ", *(k2+g));
-        }
-        printf("\n");
-    #endif
-*/
-    
     for(g=KEY_LENGTH-1; g>=0; g--){
         if( *(k1+g) < *(k2+g) ){
-/*
-            printf("position %d is less than: returning TRUE\n", g);
-            printf("less than returning TRUE\n");
-*/
             return TRUE;
         } else {
             if( *(k1+g) > *(k2+g) ){
-/*
-                printf("position %d is greater than: returning FALSE\n", g);
-                printf("less than returning FALSE\n");
-*/
                 return FALSE;
             } 
-/*
-            else {
-                printf("position %d is equal skipping this position\n", g);
-            }
-*/
         }
     }
-/*
-    printf("less than returning FALSE\n");
-*/
     return FALSE;
 }
 
@@ -361,10 +313,6 @@ snode * find_node(unsigned char * key){
         }
     }
     if( equals(x->forward[1]->data, key) ){
-/*
-        printf("find node found it: "); view_key(x->forward[1]->data); printf("[%d](%d)\n", x->forward[1], x->width[1]);
-        view_snode(x, 1);
-*/
         return x->forward[1];
     } else {
         return NULL;
@@ -501,16 +449,9 @@ int8_t skiplist_delete(unsigned char * key){
     if( equals(x->data, key) ) {        
         for(i = 1; i <= list->level; i++) {
             if(update[i]->forward[i] != x){
-/*
-                printf("%d: this isn't the intended node. Break!\n", i);
-*/
-                printf("%d: this isn't the intended node.\n", i);
                 if(UPDATE_WIDTHS_ON_DELETE){
                     update[i]->width[i]--;
                 }
-/*
-                break;
-*/
             } else {
                 if(UPDATE_WIDTHS_ON_DELETE){
                     update[i]->width[i] = update[i]->width[i] + x->width[i] - 1;
@@ -540,7 +481,6 @@ int64_t index_of(unsigned char * key){
             x = x->forward[i];
         }
     }
-    
     if( equals(x->forward[1]->data, key) ){
         return index;
     } else {
