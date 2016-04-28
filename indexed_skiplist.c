@@ -218,21 +218,12 @@ void skiplist_full_dump(){
         
         printf("%d: HEAD [%d](%d)->",
                 g, list->header, list->header->width[g]);
-        
-/*
-        printf("%d: HEAD (%d),(%d)->", 
-                g, list->header->width[g], list->header->is_header[g]);
-*/
-        
         while( x && x->forward[g] != list->header ){
             printf("[");
             view_key(x->forward[g]->data);
             printf(" - ");
             view_data(x->forward[g]->data);
             printf(" - [%d](%d)", x, x->width[g]);
-/*
-            printf(",(%d)", x->is_header[g]);
-*/
             printf("]->");
             x = x->forward[g];
         }
@@ -329,6 +320,9 @@ void * skiplist_read(unsigned char * key){
         printf("skiplist read, level = %d\n", list->level);
     #endif
 
+    if(is_max_key(key)){
+        return NON_VALUE;
+    }
     x = find_node(key);
     if( x != NULL ){
         #ifdef TRACE
@@ -353,6 +347,9 @@ void * skiplist_write(unsigned char * key){
         printf("skiplist write\n\n");
     #endif
 
+    if(is_max_key(key)){
+        return NON_POSITION;
+    }
     w = list->header;
     for (i = list->level; i >= 1; i--){
         while( less_than(w->forward[i]->data, key) ){
@@ -438,6 +435,9 @@ int8_t skiplist_delete(unsigned char * key){
         skiplist_premium_dump();
     #endif
 
+    if(is_max_key(key)){
+        return FAILURE;
+    }
     x = list->header;    
     for (i = list->level; i >= 1; i--) {
         while( less_than(x->forward[i]->data, key) ){            
@@ -473,6 +473,9 @@ int64_t index_of(unsigned char * key){
     snode *x;
     int i, index;
 
+    if(is_max_key(key)){
+        return -1;
+    }
     x = list->header;
     index = 0;
     for (i = list->level; i >= 1; i--){

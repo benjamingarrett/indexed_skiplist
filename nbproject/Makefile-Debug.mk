@@ -65,21 +65,21 @@ LDLIBSOPTIONS=
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
-	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/indexed_skiplist
+	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${TESTDIR}/TestFiles/f5
 
-${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/indexed_skiplist: ${OBJECTFILES}
-	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
-	${LINK.c} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/indexed_skiplist ${OBJECTFILES} ${LDLIBSOPTIONS} 
+${TESTDIR}/TestFiles/f5: ${OBJECTFILES}
+	${MKDIR} -p ${TESTDIR}/TestFiles
+	${LINK.c} -o ${TESTDIR}/TestFiles/f5 ${OBJECTFILES} ${LDLIBSOPTIONS} 
 
 ${OBJECTDIR}/main.o: main.c 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.c) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/main.o main.c
+	$(COMPILE.c) -g -I. -MMD -MP -MF $@.d -o ${OBJECTDIR}/main.o main.c
 
 ${OBJECTDIR}/indexed_skiplist.o: indexed_skiplist.c 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.c) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/indexed_skiplist.o indexed_skiplist.c
+	$(COMPILE.c) -g -I. -MMD -MP -MF $@.d -o ${OBJECTDIR}/indexed_skiplist.o indexed_skiplist.c
 
 # Subprojects
 .build-subprojects:
@@ -106,25 +106,25 @@ ${TESTDIR}/TestFiles/f3: ${TESTDIR}/tests/skiplist_test_read_write_delete.o ${OB
 ${TESTDIR}/tests/skiplist_test_index_of.o: tests/skiplist_test_index_of.c 
 	${MKDIR} -p ${TESTDIR}/tests
 	${RM} $@.d
-	$(COMPILE.c) -g -I. -MMD -MP -MF $@.d -o ${TESTDIR}/tests/skiplist_test_index_of.o tests/skiplist_test_index_of.c
+	$(COMPILE.c) -g -I. -I. -MMD -MP -MF $@.d -o ${TESTDIR}/tests/skiplist_test_index_of.o tests/skiplist_test_index_of.c
 
 
 ${TESTDIR}/tests/skiplist_test_key_comparisons.o: tests/skiplist_test_key_comparisons.c 
 	${MKDIR} -p ${TESTDIR}/tests
 	${RM} $@.d
-	$(COMPILE.c) -g -I. -I. -MMD -MP -MF $@.d -o ${TESTDIR}/tests/skiplist_test_key_comparisons.o tests/skiplist_test_key_comparisons.c
+	$(COMPILE.c) -g -I. -I. -I. -MMD -MP -MF $@.d -o ${TESTDIR}/tests/skiplist_test_key_comparisons.o tests/skiplist_test_key_comparisons.c
 
 
 ${TESTDIR}/tests/skiplist_test_rand_level.o: tests/skiplist_test_rand_level.c 
 	${MKDIR} -p ${TESTDIR}/tests
 	${RM} $@.d
-	$(COMPILE.c) -g -I. -MMD -MP -MF $@.d -o ${TESTDIR}/tests/skiplist_test_rand_level.o tests/skiplist_test_rand_level.c
+	$(COMPILE.c) -g -I. -I. -MMD -MP -MF $@.d -o ${TESTDIR}/tests/skiplist_test_rand_level.o tests/skiplist_test_rand_level.c
 
 
 ${TESTDIR}/tests/skiplist_test_read_write_delete.o: tests/skiplist_test_read_write_delete.c 
 	${MKDIR} -p ${TESTDIR}/tests
 	${RM} $@.d
-	$(COMPILE.c) -g -I. -MMD -MP -MF $@.d -o ${TESTDIR}/tests/skiplist_test_read_write_delete.o tests/skiplist_test_read_write_delete.c
+	$(COMPILE.c) -g -I. -I. -MMD -MP -MF $@.d -o ${TESTDIR}/tests/skiplist_test_read_write_delete.o tests/skiplist_test_read_write_delete.c
 
 
 ${OBJECTDIR}/main_nomain.o: ${OBJECTDIR}/main.o main.c 
@@ -135,7 +135,7 @@ ${OBJECTDIR}/main_nomain.o: ${OBJECTDIR}/main.o main.c
 	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
 	then  \
 	    ${RM} $@.d;\
-	    $(COMPILE.c) -g -Dmain=__nomain -MMD -MP -MF $@.d -o ${OBJECTDIR}/main_nomain.o main.c;\
+	    $(COMPILE.c) -g -I. -Dmain=__nomain -MMD -MP -MF $@.d -o ${OBJECTDIR}/main_nomain.o main.c;\
 	else  \
 	    ${CP} ${OBJECTDIR}/main.o ${OBJECTDIR}/main_nomain.o;\
 	fi
@@ -148,7 +148,7 @@ ${OBJECTDIR}/indexed_skiplist_nomain.o: ${OBJECTDIR}/indexed_skiplist.o indexed_
 	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
 	then  \
 	    ${RM} $@.d;\
-	    $(COMPILE.c) -g -Dmain=__nomain -MMD -MP -MF $@.d -o ${OBJECTDIR}/indexed_skiplist_nomain.o indexed_skiplist.c;\
+	    $(COMPILE.c) -g -I. -Dmain=__nomain -MMD -MP -MF $@.d -o ${OBJECTDIR}/indexed_skiplist_nomain.o indexed_skiplist.c;\
 	else  \
 	    ${CP} ${OBJECTDIR}/indexed_skiplist.o ${OBJECTDIR}/indexed_skiplist_nomain.o;\
 	fi
@@ -168,7 +168,7 @@ ${OBJECTDIR}/indexed_skiplist_nomain.o: ${OBJECTDIR}/indexed_skiplist.o indexed_
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
 	${RM} -r ${CND_BUILDDIR}/${CND_CONF}
-	${RM} ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/indexed_skiplist
+	${RM} ${TESTDIR}/TestFiles/f5
 
 # Subprojects
 .clean-subprojects:

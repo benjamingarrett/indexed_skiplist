@@ -12,8 +12,8 @@ CND_DISTDIR=dist
 CND_BUILDDIR=build
 NBTMPDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}/tmp-packaging
 TMPDIRNAME=tmp-packaging
-OUTPUT_PATH=${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/indexed_skiplist
-OUTPUT_BASENAME=indexed_skiplist
+OUTPUT_PATH=${TESTDIR}/TestFiles/f5
+OUTPUT_BASENAME=f5
 PACKAGE_TOP_DIR=indexedskiplist/
 
 # Functions
