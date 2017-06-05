@@ -20,22 +20,16 @@
 #define FAILURE 0
 #define SUCCESS 1
 
-uint64_t NON_VALUE = -1;
-uint64_t NON_POSITION = -1;
-uint64_t KEY_LENGTH = 4;
-uint64_t VALUE_LENGTH = 8;
-int max_levels = 10;
-
 void test1() {
     
     FILE * fp;
-    uint64_t max_key, capacity, max_load, * key, g, h, num_anomalies, num_trials;
-    int type, * operation, * status, * result, num_operations, actual_index, * expected_index;
-    int index_trials, index_anomalies;
-    int * index_anomaly;
+    int64_t max_key, capacity, max_load, * key, g, h, num_anomalies, num_trials;
+    int64_t type, * operation, * status, * result, num_operations, actual_index, * expected_index;
+    int64_t index_trials, index_anomalies;
+    int64_t * index_anomaly;
     unsigned char * k;
     unsigned char KEY[4];
-    uint64_t * vp, val;
+    int64_t * val;
     
     printf("skiplist_test_index_of\n");
     fp = fopen("../misc_phd/input/operation_sequences/operation_sequence_with_feedback_and_indexes","r");
@@ -48,10 +42,10 @@ void test1() {
         printf("Artificial feedback detected\n");
     }
     fscanf(fp, "%d\n", &num_operations);
-    fscanf(fp, "%d\n", &max_key);
-    fscanf(fp, "%d\n", &capacity);
-    fscanf(fp, "%d\n", &max_load);
-    printf("%d %d %d %d\n", num_operations, max_key, capacity, max_load);
+    fscanf(fp, "%ld\n", &max_key);
+    fscanf(fp, "%ld\n", &capacity);
+    fscanf(fp, "%ld\n", &max_load);
+    printf("%d %ld %ld %ld\n", num_operations, max_key, capacity, max_load);
     operation = calloc(num_operations, sizeof(int));
     key = calloc(num_operations, sizeof(uint64_t));
     status = calloc(num_operations, sizeof(int));

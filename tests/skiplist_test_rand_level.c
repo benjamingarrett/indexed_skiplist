@@ -8,9 +8,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-/*
+
 #define RUN_TEST  
-*/
+
 
 void test1() {
     

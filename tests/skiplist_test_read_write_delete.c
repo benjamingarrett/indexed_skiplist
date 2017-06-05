@@ -9,9 +9,9 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-/*
+
 #define RUN_TEST  
-*/
+
 
 #define VIEW_PROGRESS  
 #define READ 0
@@ -30,13 +30,14 @@ void test1() {
     
     FILE * fp;
     uint64_t max_key, capacity, max_load, * key, g, h, num_anomalies, num_trials;
-    int type, * operation, * status, * result, num_operations;
+    int type, * operation, * status, * result, num_operations, deletions_enabled;
     unsigned char * k;
     unsigned char KEY[4];
     uint64_t * vp, val;
     
     printf("skiplist_test_read_write_delete\n");
-    fp = fopen("../misc_phd/input/operation_sequences/operation_sequence_with_feedback","r");
+//    fp = fopen("../misc_phd/input/operation_sequences/feedback/deletions/100/operation_sequence_with_feedback-100-20-32-12","r");
+    fp = fopen("../misc_phd/input/operation_sequences/feedback/deletions/100000/operation_sequence_with_feedback-100000-80000-131072-22587","r");
     if(fp==NULL){
         printf("fp is null!\n");
         exit(1);
@@ -49,6 +50,7 @@ void test1() {
     fscanf(fp, "%d\n", &max_key);
     fscanf(fp, "%d\n", &capacity);
     fscanf(fp, "%d\n", &max_load);
+    fscanf(fp, "%d\n", &deletions_enabled);
     printf("%d %d %d %d\n", num_operations, max_key, capacity, max_load);
     operation = calloc(num_operations, sizeof(int));
     key = calloc(num_operations, sizeof(uint64_t));
@@ -62,13 +64,10 @@ void test1() {
         fscanf(fp, "%d %d %d\n", &operation[g], &key[g], &status[g]);
     }
     fclose(fp);
-/*
     for(g=0; g<num_operations; g++){
         printf("%d %d %d %d\n", g, operation[g], key[g], status[g]);
     }
-*/
-    initialize_skiplist(
-        max_levels, &NON_VALUE, &NON_POSITION, KEY_LENGTH, VALUE_LENGTH);
+    initialize_skiplist_long_int();
     #ifdef VIEW_PROGRESS
         printf("Starting trials\n");
     #endif
@@ -82,15 +81,14 @@ void test1() {
             printf("Performing operation: %d %d %d %d\n", g, operation[g], key[g], status[g]);
         #endif
 
-        k = (unsigned char *)&key[g];
-        for(h=0; h<4; h++){
-            KEY[h] = *(k+h);
-        }
+//        k = (unsigned char *)&key[g];
+//        for(h=0; h<4; h++){
+//            KEY[h] = *(k+h);
+//        }
         
         switch(operation[g]){
             case READ:
-                vp = (uint64_t *)skiplist_read(KEY);
-                val = *vp;
+                val = skiplist_read_long_int(&key[g]);
                 if(val == NON_VALUE){
                     result[g] = FAILURE;
                 } else {
@@ -98,31 +96,19 @@ void test1() {
                 }
                 break;
             case WRITE:
-                vp = (uint64_t *)skiplist_read(KEY);
-                val = *vp;
+                val = skiplist_write_long_int(&key[g], &key[g]);
                 if(val == NON_VALUE){
-                    vp = (uint64_t *)skiplist_write(KEY);
-                    if( *vp != NON_POSITION ){
-                        *vp = key[g];
-                        result[g] = SUCCESS;
-                    } else {
-                        result[g] = FAILURE;
-                    }
-                } else {
                     result[g] = FAILURE;
+                } else {
+                    result[g] = SUCCESS;
                 }
                 break;
             case DELETE:
-                vp = (uint64_t *)skiplist_read(KEY);
-                val = *vp;
+                val = skiplist_delete_long_int(&key[g]);
                 if(val == NON_VALUE){
                     result[g] = FAILURE;
                 } else {
-                    if( skiplist_delete(KEY) == 0 ){
-                        result[g] = SUCCESS;
-                    } else {
-                        result[g] = FAILURE;
-                    }
+                    result[g] = SUCCESS;
                 }
                 break;
             default:

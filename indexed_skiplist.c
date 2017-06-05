@@ -36,10 +36,12 @@ typedef struct skiplist {
 
 skiplist * list;
 
+void initialize_test_levels();
+
 void initialize_skiplist(
             int max_levels,
-            void * non_value, 
-            void * non_position,
+         /*   void * non_value, 
+            void * non_position,*/
             size_t key_length, 
             size_t value_length){
     
@@ -49,8 +51,8 @@ void initialize_skiplist(
         printf("initialize skiplist\n");
     #endif
     MAX_LEVELS = max_levels;
-    NON_VALUE = non_value;
-    NON_POSITION = non_position;
+  /*  NON_VALUE = non_value;
+    NON_POSITION = non_position;*/
     if(key_length < MIN_KEY_LENGTH){
         KEY_LENGTH = MIN_KEY_LENGTH;
     } else {
@@ -236,6 +238,10 @@ uint8_t equals(unsigned char * k1, unsigned char * k2){
     
     int g;
     
+//    printf("equals %x %x %x %x %x %x %x %x --- %x %x %x %x %x %x %x %x\n", 
+//            *(k1+0), *(k1+1), *(k1+2), *(k1+3), *(k1+4), *(k1+5), *(k1+6), *(k1+7), 
+//            *(k2+0), *(k2+1), *(k2+2), *(k2+3), *(k2+4), *(k2+5), *(k2+6), *(k2+7) );
+    
     for(g=0; g<KEY_LENGTH; g++){
         if( *(k1+g) != *(k2+g) ){
             return FALSE;
@@ -321,7 +327,7 @@ void * skiplist_read(unsigned char * key){
     #endif
 
     if(is_max_key(key)){
-        return NON_VALUE;
+        return NULL/*NON_VALUE*/;
     }
     x = find_node(key);
     if( x != NULL ){
@@ -333,7 +339,7 @@ void * skiplist_read(unsigned char * key){
         #ifdef TRACE
             printf("skiplist read didn't find value\n");
         #endif
-        return NON_VALUE;
+        return NULL/*NON_VALUE*/;
     }
 }
 
@@ -348,7 +354,10 @@ void * skiplist_write(unsigned char * key){
     #endif
 
     if(is_max_key(key)){
-        return NON_POSITION;
+        return NULL/*NON_POSITION*/;
+    }
+    if(find_node(key)!=NULL){
+        return NULL;
     }
     w = list->header;
     for (i = list->level; i >= 1; i--){
@@ -370,7 +379,7 @@ void * skiplist_write(unsigned char * key){
         }
         w = (snode *)malloc(sizeof(snode));
         if( w == NULL ){
-            return NON_POSITION;
+            return NULL/*NON_POSITION*/;
         }
         w->data = (unsigned char *)calloc(DATA_LENGTH, sizeof(unsigned char));
         for(g=0; g<KEY_LENGTH; g++){
@@ -424,7 +433,7 @@ void * skiplist_write(unsigned char * key){
     }
 }
 
-int8_t skiplist_delete(unsigned char * key){
+void * skiplist_delete(unsigned char * key){
     
     int i, tmp_cnt;
     snode * update[MAX_LEVELS + 1];
@@ -436,7 +445,7 @@ int8_t skiplist_delete(unsigned char * key){
     #endif
 
     if(is_max_key(key)){
-        return FAILURE;
+        return NULL/*FAILURE*/;
     }
     x = list->header;    
     for (i = list->level; i >= 1; i--) {
@@ -463,17 +472,19 @@ int8_t skiplist_delete(unsigned char * key){
         while (list->level > 1 && list->header->forward[list->level] == list->header){
             list->level--;
         }
-        return SUCCESS;
+        return list->header->forward[1]->data + KEY_LENGTH;
     }
-    return FAILURE;
+    return NULL/*FAILURE*/;
 }
 
 int64_t index_of(unsigned char * key){
     
     snode *x;
     int i, index;
+    
 
     if(is_max_key(key)){
+//        printf("index_of is max key\n");
         return -1;
     }
     x = list->header;
@@ -485,8 +496,10 @@ int64_t index_of(unsigned char * key){
         }
     }
     if( equals(x->forward[1]->data, key) ){
+//        printf("index_of found the key\n");
         return index;
     } else {
+//        printf("index_of did not find key\n");
         return -1;
     }
 }

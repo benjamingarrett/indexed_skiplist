@@ -13,12 +13,13 @@ extern "C" {
 #endif
 
     #include<stdint.h>
+    #include<stdio.h>
     #include<stdlib.h>
     #include<limits.h>
     void initialize_skiplist(
             int max_levels,
-            void * non_value, 
-            void * non_position,
+       /*     void * non_value, 
+            void * non_position,  */
             size_t key_length, 
             size_t value_length);
     
@@ -32,7 +33,7 @@ extern "C" {
     
     void * skiplist_read(unsigned char * key);
     void * skiplist_write(unsigned char * key);
-    int8_t skiplist_delete(unsigned char * key);
+    void * skiplist_delete(unsigned char * key);
     int64_t index_of(unsigned char * key);
 
 #ifdef	__cplusplus
