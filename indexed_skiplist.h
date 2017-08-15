@@ -35,6 +35,7 @@ extern "C" {
     void * skiplist_write(unsigned char * key);
     void * skiplist_delete(unsigned char * key);
     int64_t index_of(unsigned char * key);
+    int64_t size_of();
 
 #ifdef	__cplusplus
 }

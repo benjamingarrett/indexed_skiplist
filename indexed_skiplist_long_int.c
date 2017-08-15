@@ -78,3 +78,7 @@ int64_t index_of_long_int(int64_t * key){
     }
     return index_of(byte_key);
 }
+int64_t size_of_long_int(){
+    
+    return size_of();
+}

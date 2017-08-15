@@ -9,7 +9,7 @@
 #define TRACE  
 */
 
-uint64_t MAX_LEVELS = 10;
+uint64_t MAX_LEVELS = 25;
 uint64_t MIN_KEY_LENGTH = 4;
 uint64_t MIN_VALUE_LENGTH = 4;
 uint64_t INDEX_LENGTH = 8;
@@ -68,7 +68,7 @@ void initialize_skiplist(
     list->header = (snode *)malloc(sizeof(struct snode));
     list->header->data = (unsigned char *)calloc(DATA_LENGTH, sizeof(unsigned char));
     for(i=0; i<KEY_LENGTH; i++){
-        list->header->data[i] = 0xff;
+        list->header->data[i] = 0xff;//TODO
     }
     list->header->forward = (snode **)malloc(sizeof(snode*) * (MAX_LEVELS+1));
     list->header->width = (int *)calloc(MAX_LEVELS+1, sizeof(int));
@@ -164,7 +164,7 @@ void view_data(unsigned char * k){
 
 void view_snode(snode * node, int g){
 
-    printf("{[%d](%d)[%d]=", node, node->width[g], node->forward[g]);
+    printf("{[%d](%d)[%d]=", (long int)node, (long int)node->width[g], (long int)node->forward[g]);
     view_key(node->data);
     printf("}");
 }
@@ -250,7 +250,7 @@ uint8_t equals(unsigned char * k1, unsigned char * k2){
     return TRUE;
 }
 
-uint8_t less_than(unsigned char * k1, unsigned char * k2){
+uint8_t less_than(unsigned char * k1, unsigned char * k2){// TODO
     
     int g;
     
@@ -266,7 +266,7 @@ uint8_t less_than(unsigned char * k1, unsigned char * k2){
     return FALSE;
 }
 
-int is_max_key(unsigned char * key){
+int is_max_key(unsigned char * key){// TODO
     
     int g;
     
@@ -284,13 +284,13 @@ snode * find_prior_insertion_point(unsigned char * key){
     
     printf("find prior insertion point: ");view_key(key);printf("\n");
     printf("compare(header): ");view_key(list->header->forward[list->level]->data);printf(" and ");view_key(key);printf("\n");
-    if( ! less_than(list->header->forward[list->level]->data, key) ){
+    if( ! less_than(list->header->forward[list->level]->data, key) ){// TODO
         printf("found prior insertion point(header): "); view_snode(list->header, 1); printf("\n");
         return list->header;
     }
     x = list->header->forward[list->level];
     printf("compare(initially): ");view_key(x->forward[list->level]->data);printf(" and ");view_key(key);printf("\n");
-    while( less_than(x->forward[list->level]->data, key) ){
+    while( less_than(x->forward[list->level]->data, key) ){// TODO
         x = x->forward[list->level];
         printf("compare: ");view_key(x->forward[list->level]->data);printf(" and ");view_key(key);printf("\n");
     }
@@ -305,7 +305,7 @@ snode * find_node(unsigned char * key){
     
     x = list->header;
     for(i=list->level; i>=1; i--){
-        while( less_than(x->forward[i]->data, key) ){
+        while( less_than(x->forward[i]->data, key) ){// TODO
             x = x->forward[i];
         }
     }
@@ -326,7 +326,7 @@ void * skiplist_read(unsigned char * key){
         printf("skiplist read, level = %d\n", list->level);
     #endif
 
-    if(is_max_key(key)){
+    if(is_max_key(key)){// TODO
         return NULL/*NON_VALUE*/;
     }
     x = find_node(key);
@@ -353,7 +353,7 @@ void * skiplist_write(unsigned char * key){
         printf("skiplist write\n\n");
     #endif
 
-    if(is_max_key(key)){
+    if(is_max_key(key)){// TODO
         return NULL/*NON_POSITION*/;
     }
     if(find_node(key)!=NULL){
@@ -361,7 +361,7 @@ void * skiplist_write(unsigned char * key){
     }
     w = list->header;
     for (i = list->level; i >= 1; i--){
-        while( less_than(w->forward[i]->data, key) ){
+        while( less_than(w->forward[i]->data, key) ){// TODO
             w = w->forward[i];
         }
         update[i] = w;
@@ -399,7 +399,7 @@ void * skiplist_write(unsigned char * key){
             for(i=2; i<=level; i++){
                 y = w;
                 w->width[i] = y->width[i-1];                    
-                while( less_than( y->forward[i-1]->data, w->forward[i]->data ) ){
+                while( less_than( y->forward[i-1]->data, w->forward[i]->data ) ){// TODO
                     y = y->forward[i-1];
                     w->width[i] += y->width[i-1];
                 }
@@ -410,7 +410,7 @@ void * skiplist_write(unsigned char * key){
                 x = find_node(update[i]->data);
                 y = x;
                 temp_width = y->width[i-1];
-                while( less_than( y->forward[i-1]->data, x->forward[i]->data) ){
+                while( less_than( y->forward[i-1]->data, x->forward[i]->data) ){// TODO
                     y = y->forward[i-1];
                     temp_width += y->width[i-1];
                 }
@@ -420,7 +420,7 @@ void * skiplist_write(unsigned char * key){
             if(level < list->level){
                 x = list->header;
                 for(i=list->level; i>level; i--){
-                    while( less_than( x->forward[i]->data, key ) ){
+                    while( less_than( x->forward[i]->data, key ) ){// TODO
                         x = x->forward[i];
                     }
                     x->width[i]++;
@@ -428,7 +428,7 @@ void * skiplist_write(unsigned char * key){
             }
             
         }
-
+        list->size++;
         return w->data + KEY_LENGTH;
     }
 }
@@ -444,12 +444,12 @@ void * skiplist_delete(unsigned char * key){
         skiplist_premium_dump();
     #endif
 
-    if(is_max_key(key)){
+    if(is_max_key(key)){// TODO
         return NULL/*FAILURE*/;
     }
     x = list->header;    
     for (i = list->level; i >= 1; i--) {
-        while( less_than(x->forward[i]->data, key) ){            
+        while( less_than(x->forward[i]->data, key) ){// TODO
             x = x->forward[i];
         }
         update[i] = x;
@@ -472,9 +472,16 @@ void * skiplist_delete(unsigned char * key){
         while (list->level > 1 && list->header->forward[list->level] == list->header){
             list->level--;
         }
+        list->size--;
+        list->size = ( list->size < 0 ) ? 0 : list->size;
         return list->header->forward[1]->data + KEY_LENGTH;
     }
     return NULL/*FAILURE*/;
+}
+
+int64_t size_of(){
+    
+    return list->size;
 }
 
 int64_t index_of(unsigned char * key){
@@ -483,14 +490,14 @@ int64_t index_of(unsigned char * key){
     int i, index;
     
 
-    if(is_max_key(key)){
+    if(is_max_key(key)){// TODO
 //        printf("index_of is max key\n");
         return -1;
     }
     x = list->header;
     index = 0;
     for (i = list->level; i >= 1; i--){
-        while( less_than(x->forward[i]->data, key) ){
+        while( less_than(x->forward[i]->data, key) ){// TODO
             index += x->width[i];
             x = x->forward[i];
         }
