@@ -24,6 +24,11 @@ void initialize_skiplist_long_int(){
     initialize_skiplist(MAX__LEVELS, KEY__LENGTH, VALUE__LENGTH);
 }
 
+void skiplist_dump_long_int(){
+    
+    skiplist_dump();
+}
+
 int64_t * skiplist_read_long_int(int64_t * key){
     
     uint64_t g;

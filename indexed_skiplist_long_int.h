@@ -30,6 +30,7 @@ extern "C" {
     int64_t size_of_long_int();
     void skiplist_premium_dump_long_int();
     void skiplist_full_dump_long_int();
+    void skiplist_dump_long_int();
     
 
 #ifdef __cplusplus

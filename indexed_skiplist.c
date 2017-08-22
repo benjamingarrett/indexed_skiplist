@@ -164,7 +164,7 @@ void view_data(unsigned char * k){
 
 void view_snode(snode * node, int g){
 
-    printf("{[%d](%d)[%d]=", (long int)node, (long int)node->width[g], (long int)node->forward[g]);
+    printf("{[%ld](%ld)[%ld]=", (long int)node, (long int)node->width[g], (long int)node->forward[g]);
     view_key(node->data);
     printf("}");
 }
