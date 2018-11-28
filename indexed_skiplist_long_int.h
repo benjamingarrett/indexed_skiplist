@@ -1,16 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/* 
- * File:   indexed_skiplist_long_int.h
- * Author: benjamin
- *
- * Created on March 2, 2017, 1:17 AM
- */
-
 #ifndef INDEXED_SKIPLIST_LONG_INT_H
 #define INDEXED_SKIPLIST_LONG_INT_H
 
