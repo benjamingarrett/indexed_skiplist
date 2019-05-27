@@ -5,10 +5,6 @@
 extern "C" {
 #endif
 
-#include<stdint.h>
-#include<stdlib.h>
-#include<limits.h>
-#include "indexed_skiplist.h"
   void initialize_skiplist_long_int();
   int64_t * skiplist_read_long_int(int64_t * key);
   int64_t * skiplist_write_long_int(int64_t * key, int64_t * value);
@@ -18,7 +14,6 @@ extern "C" {
   void skiplist_premium_dump_long_int();
   void skiplist_full_dump_long_int();
   void skiplist_dump_long_int();
-
 
 #ifdef __cplusplus
 }

@@ -12,10 +12,6 @@
 extern "C" {
 #endif
 
-#include<stdint.h>
-#include<stdio.h>
-#include<stdlib.h>
-#include<limits.h>
   void initialize_skiplist(
           int max_levels,
           /*     void * non_value, 
@@ -30,7 +26,6 @@ extern "C" {
   void skiplist_full_dump();
   void skiplist_premium_dump();
   void view_key(unsigned char * key);
-
   void * skiplist_read(unsigned char * key);
   void * skiplist_write(unsigned char * key);
   void * skiplist_delete(unsigned char * key);
