@@ -4,11 +4,6 @@
 #include <stdlib.h>
 #include "indexed_skiplist.h"
 
-#define FALSE 0
-#define TRUE 1
-#define SUCCESS 0
-#define FAILURE 1
-
 uint64_t MAX_LEVELS = 25;
 uint64_t MIN_KEY_LENGTH = 4;
 uint64_t MIN_VALUE_LENGTH = 4;
@@ -19,8 +14,8 @@ void * NON_POSITION;
 uint64_t KEY_LENGTH;
 uint64_t VALUE_LENGTH;
 
-int UPDATE_WIDTHS_ON_WRITE = TRUE;
-int UPDATE_WIDTHS_ON_DELETE = TRUE;
+int UPDATE_WIDTHS_ON_WRITE = 1;
+int UPDATE_WIDTHS_ON_DELETE = 1;
 
 typedef struct snode {
   unsigned char * data;
@@ -39,37 +34,36 @@ skiplist * list;
 void initialize_test_levels();
 
 void initialize_skiplist(int max_levels, size_t key_length, size_t value_length){
-  int i;
+  int64_t i;
   #ifdef TRACE
   printf("initialize skiplist\n");
   #endif
   MAX_LEVELS = max_levels;
-  if (key_length < MIN_KEY_LENGTH) {
+  if(key_length < MIN_KEY_LENGTH){
     KEY_LENGTH = MIN_KEY_LENGTH;
-  } else {
+  }else{
     KEY_LENGTH = key_length;
   }
-  if (value_length < MIN_VALUE_LENGTH) {
+  if(value_length < MIN_VALUE_LENGTH){
     VALUE_LENGTH = MIN_VALUE_LENGTH;
-  } else {
+  }else{
     VALUE_LENGTH = value_length;
   }
   DATA_LENGTH = KEY_LENGTH + VALUE_LENGTH + INDEX_LENGTH;
   list = (skiplist *) malloc(sizeof (struct skiplist));
   list->header = (snode *) malloc(sizeof (struct snode));
   list->header->data = (unsigned char *) calloc(DATA_LENGTH, sizeof (unsigned char));
-  for (i = 0; i < KEY_LENGTH; i++) {
+  for(i = 0; i < KEY_LENGTH; i++){
     list->header->data[i] = 0xff;
   }
   list->header->forward = (snode **) malloc(sizeof (snode*) * (MAX_LEVELS + 1));
   list->header->width = (int *) calloc(MAX_LEVELS + 1, sizeof (int));
-  for (i = 0; i <= MAX_LEVELS; i++) {
+  for(i = 0; i <= MAX_LEVELS; i++){
     list->header->forward[i] = list->header;
     list->header->width[i] = 1;
   }
   list->level = 1;
   list->size = 0;
-
   initialize_test_levels();
 }
 
@@ -130,13 +124,15 @@ void skiplist_node_free(snode *x){
 }
 
 void view_key(unsigned char * data){
-  for(int g = 0; g < KEY_LENGTH; g++){
+  int64_t g;
+  for(g = 0; g < KEY_LENGTH; g++){
     printf("%x ", data[g]);
   }
 }
 
 void view_data(unsigned char * k){
-  for(int g = KEY_LENGTH; g < (KEY_LENGTH + VALUE_LENGTH); g++){
+  int64_t g;
+  for(g = KEY_LENGTH; g < (KEY_LENGTH + VALUE_LENGTH); g++){
     printf("%x ", *(k + g));
   }
 }
@@ -161,8 +157,9 @@ void skiplist_dump(){
 }
 
 void skiplist_premium_dump(){
+  int64_t g;
   snode * x;
-  for(int g = list->level; g >= 1; g--){
+  for(g = list->level; g >= 1; g--){
     x = list->header;
     printf("%d: ", g);
     view_snode(x, g);
@@ -182,7 +179,7 @@ void skiplist_premium_dump(){
 }
 
 void skiplist_full_dump(){
-  int g, h;
+  int64_t g, h;
   snode * update[MAX_LEVELS + 1];
   snode * x;
   #ifdef TRACE
@@ -209,74 +206,78 @@ uint8_t equals(unsigned char * k1, unsigned char * k2) {
   //    printf("equals %x %x %x %x %x %x %x %x --- %x %x %x %x %x %x %x %x\n", 
   //            *(k1+0), *(k1+1), *(k1+2), *(k1+3), *(k1+4), *(k1+5), *(k1+6), *(k1+7), 
   //            *(k2+0), *(k2+1), *(k2+2), *(k2+3), *(k2+4), *(k2+5), *(k2+6), *(k2+7) );
-  for(int g = 0; g < KEY_LENGTH; g++){
+  int64_t g;
+  for(g = 0; g < KEY_LENGTH; g++){
     if(*(k1 + g) != *(k2 + g)){
-      return FALSE;
+      return 0;
     }
   }
-  return TRUE;
+  return 1;
 }
 
 uint8_t less_than(unsigned char * k1, unsigned char * k2){
-  for(int g = KEY_LENGTH - 1; g >= 0; g--){
+  int64_t g;
+  for(g = KEY_LENGTH - 1; g >= 0; g--){
     if(*(k1 + g) < *(k2 + g)){
-      return TRUE;
+      return 1;
     } else {
       if(*(k1 + g) > *(k2 + g)){
-        return FALSE;
+        return 0;
       }
     }
   }
-  return FALSE;
+  return 0;
 }
 
 int is_max_key(unsigned char * key){ 
-  for(int g = 0; g < KEY_LENGTH; g++){
+  int64_t g;
+  for(g = 0; g < KEY_LENGTH; g++){
     if(*(key + g) != 0xff){
-      return FALSE;
+      return 0;
     }
   }
-  return TRUE;
+  return 1;
 }
 
 snode * find_prior_insertion_point(unsigned char * key){
-  printf("find prior insertion point: ");
-  view_key(key);
-  printf("\n");
-  printf("compare(header): ");
-  view_key(list->header->forward[list->level]->data);
-  printf(" and ");
-  view_key(key);
-  printf("\n");
+  //printf("find prior insertion point: ");
+  //view_key(key);
+  //printf("\n");
+  //printf("compare(header): ");
+  //view_key(list->header->forward[list->level]->data);
+  //printf(" and ");
+  //view_key(key);
+  //printf("\n");
   if(!less_than(list->header->forward[list->level]->data, key)){
-    printf("found prior insertion point(header): ");
-    view_snode(list->header, 1);
-    printf("\n");
+    //printf("found prior insertion point(header): ");
+    //view_snode(list->header, 1);
+    //printf("\n");
     return list->header;
   }
   snode * x = list->header->forward[list->level];
-  printf("compare(initially): ");
-  view_key(x->forward[list->level]->data);
-  printf(" and ");
-  view_key(key);
-  printf("\n");
+  //printf("compare(initially): ");
+  //view_key(x->forward[list->level]->data);
+  //printf(" and ");
+  //view_key(key);
+  //printf("\n");
   while(less_than(x->forward[list->level]->data, key)){
     x = x->forward[list->level];
-    printf("compare: ");
-    view_key(x->forward[list->level]->data);
-    printf(" and ");
-    view_key(key);
-    printf("\n");
+    //printf("compare: ");
+    //view_key(x->forward[list->level]->data);
+    //printf(" and ");
+    //view_key(key);
+    //printf("\n");
   }
-  printf("found prior insertion point: ");
-  view_snode(x, 1);
-  printf("\n");
+  //printf("found prior insertion point: ");
+  //view_snode(x, 1);
+  //printf("\n");
   return x;
 }
 
 snode * find_node(unsigned char * key){
+  int64_t i;
   snode * x = list->header;
-  for(int i = list->level; i >= 1; i--){
+  for(i = list->level; i >= 1; i--){
     while(less_than(x->forward[i]->data, key)){
       x = x->forward[i];
     }
@@ -306,7 +307,7 @@ void * skiplist_read(unsigned char * key){
     #ifdef TRACE
     printf("skiplist read didn't find value\n");
     #endif
-    return NULL/*NON_VALUE*/;
+    return NULL;
   }
 }
 
@@ -401,7 +402,7 @@ void * skiplist_delete(unsigned char * key){
   skiplist_premium_dump();
   #endif
   if(is_max_key(key)){
-    return NULL/*FAILURE*/;
+    return NULL;
   }
   x = list->header;
   for(i = list->level; i >= 1; i--){
@@ -432,7 +433,7 @@ void * skiplist_delete(unsigned char * key){
     list->size = (list->size < 0) ? 0 : list->size;
     return list->header->forward[1]->data + KEY_LENGTH;
   }
-  return NULL/*FAILURE*/;
+  return NULL;
 }
 
 int64_t size_of(){
